@@ -1,7 +1,8 @@
-﻿using System.Diagnostics;
+﻿using Microsoft.Win32;
+using System.Diagnostics;
 using System.IO;
-using System.Security.Cryptography.Xml;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace PPMLesTry
@@ -11,7 +12,7 @@ namespace PPMLesTry
     /// </summary>
     public partial class MainWindow : Window
     {
-        private string[] AvailableFormats = { ".png", ".jpg", ".gif", ".ppm" };
+        private string[] AvailableFormats = { ".png", ".jpg", ".gif", ".ppm", ".jpeg" };
         private string file = string.Empty;
 
         public MainWindow()
@@ -19,20 +20,25 @@ namespace PPMLesTry
             InitializeComponent();
         }
 
-        private void GetTheFile(object sender, DragEventArgs e)
+        private void FileDropped(object sender, DragEventArgs e)
         {
             if (!e.Data.GetDataPresent(DataFormats.FileDrop)) return;
-
-            string[] files = (string[]) e.Data.GetData(DataFormats.FileDrop);
-            file = Path.GetFullPath(files[0]);
-
-            if(files.Length > 1)
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            if (files.Length != 1)
             {
                 ShowFile.Content = "Błąd: nie obsługiwane parę plików na raz.";
                 ImageHolder.Source = null;
                 return;
             }
-            if (!AvailableFormats.Contains(Path.GetExtension(file))) 
+
+            GetTheFile(Path.GetFullPath(files[0]));
+        }
+
+        private void GetTheFile(string name)
+        {
+            file = name;
+
+            if (!AvailableFormats.Contains(Path.GetExtension(file)))
             {
                 ShowFile.Content = "Błąd: plik ma nieobsługiwany format " + Path.GetExtension(file);
                 ImageHolder.Source = null;
@@ -45,7 +51,12 @@ namespace PPMLesTry
 
         private void OpenExplorer(object sender, RoutedEventArgs e)
         {
-            Process.Start("explorer.exe");
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "PNG|*.png|GIF|*.gif|JPG|*.jpg;*.jpeg|PPM|*.ppm|" + "All graphics available | *.png;*.jpg;*.jpeg;*.ppm;*.gif";
+            bool? succes = dialog.ShowDialog();
+            
+            if(succes == true)
+                GetTheFile(dialog.FileName);
         }
 
         private void Encode(object sender, RoutedEventArgs e)
@@ -60,10 +71,13 @@ namespace PPMLesTry
             }
 
             BitmapImage img = new BitmapImage(new Uri(file));
+
             int width = img.PixelWidth;
             int height = img.PixelHeight;
-
             byte[] pixelData = new byte[width * height * 3];
+
+            FormatConvertedBitmap converted = new FormatConvertedBitmap(img, PixelFormats.Rgb24, null, 0);
+            converted.CopyPixels(pixelData, width * 3, 0);
 
             using (StreamWriter writer = new StreamWriter(ppmPath))
             {
@@ -71,18 +85,17 @@ namespace PPMLesTry
                 writer.WriteLine($"{width} {height}");
                 writer.WriteLine("255");
 
-                int pixelIndex = 0;
-
-                for(int y = 0; y < height; y++)
+                for (int i = 0; i < pixelData.Length; i++)
                 {
-                    for(int x = 0; x < width; x++)
-                    {
+                    byte r = pixelData[i];
+                    byte g = pixelData[i];
+                    byte b = pixelData[i];
 
-                        writer.WriteLine($"255 255 255");
-                    }
+                    writer.WriteLine($"{r} {g} {b}");
                 }
-
             }
+
+
         }
     }
 }

@@ -50,7 +50,7 @@
                     Height="200"
                     AllowDrop="True" 
                     Background="#0a0a0a"
-                    Drop="GetTheFile"
+                    Drop="FileDropped"
                     HorizontalAlignment="Center">
 
             <Button 
