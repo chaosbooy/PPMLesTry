@@ -1,0 +1,90 @@
+﻿<Window x:Class="PPMLesTry.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PPMLesTry"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="600" Width="800" Background="#151515">
+
+    <Window.Resources>
+        <ResourceDictionary>
+                <ResourceDictionary.MergedDictionaries>
+                    <ResourceDictionary Source="Styles/MainWindowStyles.xaml"/>
+                </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid>
+
+        <Label 
+               Height="100"
+               Content="Szyfrowanie wiadomości :3"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Top"
+               FontSize="30"
+               Foreground="DarkGray"/>
+
+        <Label
+               Content="Podaj wiadomość do zaszyfrowania"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Top"
+               FontSize="20"
+               Margin="0,73,0,0"
+               Foreground="DarkGray"/>
+
+
+        <TextBox x:Name="Message"
+                 Text=""
+                 VerticalContentAlignment="Center"
+                 Height="40"
+                 Width="300"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Top"
+                 Margin="0,115,0,0"
+                 FontSize="24"
+         />
+
+        <Grid x:Name="FileDrop"
+                    Width="500" 
+                    Height="200"
+                    AllowDrop="True" 
+                    Background="#0a0a0a"
+                    Drop="GetTheFile"
+                    HorizontalAlignment="Center">
+
+            <Button 
+                   Height="50"
+                   Width="200"
+                   Margin="30,30,0,0"
+                   HorizontalAlignment="Left" 
+                   VerticalAlignment="Top"
+                   Content="Zrzuć tu obraz"
+                   FontSize="25"
+                   Foreground="DarkGray" Click="OpenExplorer"/>
+
+            <Label x:Name="ShowFile"
+                   Margin="50,100,0,0"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   Content=""
+                   FontSize="15"
+                   Foreground="DarkGray"/>
+
+            <Image x:Name="ImageHolder"
+                   Margin="0,0,50,0"
+                   HorizontalAlignment="Right"
+                   Height="150"
+                   Width="150"/>
+        </Grid>
+
+        <Button x:Name="EncodeBtn"
+                Content="Zakoduj"
+                FontSize="30"
+                Width="200"
+                Height="50"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Bottom"
+                Margin="0,0,0,100" Click="Encode"/>
+    </Grid>
+</Window>
