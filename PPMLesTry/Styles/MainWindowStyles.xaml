@@ -18,6 +18,10 @@
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Background" Value="Black" />
                         </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Foreground" Value="GhostWhite" />
+                            <Setter Property="Background" Value="#0a0a0a" />
+                        </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
@@ -33,9 +37,26 @@
                 <Setter Property="BorderBrush" Value="Pink" />
             </Trigger>
 
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="SelectionBrush" Value="White" />
+                <Setter Property="BorderBrush" Value="White" />
+            </Trigger>
             <Trigger Property="IsFocused" Value="True">
-                <Setter Property="BorderBrush" Value="Green" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="SelectionBrush" Value="White" />
+                <Setter Property="BorderBrush" Value="White" />
             </Trigger>
         </Style.Triggers>
+    </Style>
+
+    <Style TargetType="Menu">
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <StackPanel VerticalAlignment="Top"/>
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 </ResourceDictionary>

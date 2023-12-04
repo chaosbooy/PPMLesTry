@@ -17,74 +17,92 @@
 
     <Grid>
 
-        <Label 
-               Height="100"
-               Content="Szyfrowanie wiadomości :3"
-               HorizontalAlignment="Center"
-               VerticalAlignment="Top"
-               FontSize="30"
-               Foreground="DarkGray"/>
+        <Menu x:Name="applicationMenu"
+              Width="100"
+              Padding="10"
+              HorizontalAlignment="Left">
 
-        <Label
-               Content="Podaj wiadomość do zaszyfrowania"
-               HorizontalAlignment="Center"
-               VerticalAlignment="Top"
-               FontSize="20"
-               Margin="0,310,0,0"
-               Foreground="DarkGray"/>
+            <MenuItem Header="Main Page" FontWeight="Bold" Margin="0,0,0,30"/>
+            <MenuItem Header="Encode" Command=""/>
+            <MenuItem Header="Decipher" Command=""/>
 
 
-        <TextBox x:Name="Message"
-                 Text=""
-                 VerticalContentAlignment="Center"
-                 Height="40"
-                 Width="300"
-                 HorizontalAlignment="Center"
-                 VerticalAlignment="Top"
-                 Margin="0,352,0,0"
-                 FontSize="24"
-         />
-
-        <Grid x:Name="FileDrop"
-                    Width="500" 
-                    Height="200"
-                    AllowDrop="True" 
-                    Background="#0a0a0a"
-                    Drop="FileDropped"
-                    HorizontalAlignment="Center" Margin="0,105,0,279">
-
-            <Button 
-                   Height="50"
-                   Width="200"
-                   Margin="30,30,0,0"
-                   HorizontalAlignment="Left" 
+        </Menu>
+        
+        <Grid x:Name="EncodeGrid"
+              Width="600" 
+              HorizontalAlignment="Right">
+            <Label 
+                   Height="100"
+                   Content="Szyfrowanie wiadomości :3"
+                   HorizontalAlignment="Center"
                    VerticalAlignment="Top"
-                   Content="Zrzuć tu obraz"
-                   FontSize="25"
-                   Foreground="DarkGray" Click="OpenExplorer"/>
-
-            <Label x:Name="ShowFile"
-                   Margin="50,100,0,0"
-                   HorizontalAlignment="Left"
-                   VerticalAlignment="Top"
-                   Content=""
-                   FontSize="15"
+                   FontSize="30"
                    Foreground="DarkGray"/>
 
-            <Image x:Name="ImageHolder"
-                   Margin="0,0,50,0"
-                   HorizontalAlignment="Right"
-                   Height="150"
-                   Width="150"/>
-        </Grid>
+            <Label
+                   Content="Podaj wiadomość do zaszyfrowania"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Top"
+                   FontSize="20"
+                   Margin="0,310,0,0"
+                   Foreground="DarkGray"/>
 
-        <Button x:Name="EncodeBtn"
-                Content="Zakoduj"
-                FontSize="30"
-                Width="200"
-                Height="50"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Bottom"
-                Margin="0,0,0,100" Click="Encode"/>
+ 
+            <TextBox x:Name="Message"
+                     Text=""
+                     VerticalContentAlignment="Center"
+                     Height="40"
+                     Width="300"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Top"
+                     Margin="0,352,0,0"
+                     FontSize="24"
+ />
+
+            <Grid x:Name="FileDrop"
+                  Width="500" 
+                  Height="200"
+                  AllowDrop="True" 
+                  Background="#0a0a0a"
+                  Drop="FileDropped"
+                  HorizontalAlignment="Center" Margin="0,105,0,279">
+
+                <Button 
+                       Height="50"
+                       Width="200"
+                       Margin="30,30,0,0"
+                       HorizontalAlignment="Left" 
+                       VerticalAlignment="Top"
+                       Content="Zrzuć tu obraz"
+                       FontSize="25"
+                       Foreground="DarkGray" Click="OpenExplorer"/>
+
+                <Label x:Name="ShowFile"
+                       Margin="50,100,0,0"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Top"
+                       Content=""
+                       FontSize="15"
+                       Foreground="DarkGray"/>
+
+                <Image x:Name="ImageHolder"
+                       Margin="0,0,50,0"
+                       HorizontalAlignment="Right"
+                       Height="150"
+                       Width="150"/>
+            </Grid>
+
+            <Button x:Name="EncodeBtn"
+                    Content="Zakoduj"
+                    FontSize="30"
+                    Width="200"
+                    Height="50"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Bottom"
+                    Margin="0,0,0,100" Click="Encode"/>
+
+        </Grid>
+        
     </Grid>
 </Window>

@@ -14,6 +14,7 @@ namespace PPMLesTry
     {
         private string[] AvailableFormats = { ".png", ".jpg", ".gif", ".ppm", ".jpeg" };
         private string file = string.Empty;
+        private BitmapImage image = new BitmapImage();
 
         public MainWindow()
         {
@@ -28,6 +29,7 @@ namespace PPMLesTry
             {
                 ShowFile.Content = "Błąd: nie obsługiwane parę plików na raz.";
                 ImageHolder.Source = null;
+                image = new BitmapImage();
                 return;
             }
 
@@ -53,9 +55,9 @@ namespace PPMLesTry
         {
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Filter = "PNG|*.png|GIF|*.gif|JPG|*.jpg;*.jpeg|PPM|*.ppm|" + "All graphics available | *.png;*.jpg;*.jpeg;*.ppm;*.gif";
-            bool? succes = dialog.ShowDialog();
+            bool? success = dialog.ShowDialog();
             
-            if(succes == true)
+            if(success == true)
                 GetTheFile(dialog.FileName);
         }
 
@@ -94,7 +96,6 @@ namespace PPMLesTry
                     writer.WriteLine($"{r} {g} {b}");
                 }
             }
-
 
         }
     }
