@@ -7,24 +7,11 @@
         mc:Ignorable="d"
         Title="imoder" Height="600" Width="800" Background="#151515">
 
-    <Window.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Styles/MainWindowStyles.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Window.Resources>
-
     <Grid>
 
-        <Menu x:Name="applicationMenu"
-              Width="100"
-              Padding="10"
-              HorizontalAlignment="Left"
-              Background="#0A0A0A"
-              Foreground="DarkGray">
+        <Menu x:Name="applicationMenu">
 
-            <MenuItem Header="Main Page" FontWeight="Bold" Margin="0,0,0,30" Click="EnterPage" />
+            <MenuItem Style="{StaticResource HeadItem}" Header="Main Page" Click="EnterPage" />
             <MenuItem Header="Encode" Click="EnterPage" />
             <MenuItem Header="Decode" Click="EnterPage" />
         </Menu>

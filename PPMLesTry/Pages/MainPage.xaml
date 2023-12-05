@@ -8,7 +8,9 @@
       d:DesignHeight="600" d:DesignWidth="700"
       Title="MainPage">
 
-    <Grid>
+    <StackPanel>
+        <Label Content="Strona główna" FontSize="30" HorizontalAlignment="Center" />
         
-    </Grid>
+        <Label />
+    </StackPanel>
 </Page>
