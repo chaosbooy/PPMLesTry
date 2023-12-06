@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using PPMLesTry.Coders;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,90 +13,77 @@ namespace PPMLesTry.Pages
     /// </summary>
     public partial class EncodingPage : Page
     {
-    private string[] AvailableFormats = { ".png", ".jpg", ".gif", ".ppm", ".jpeg" };
-    private string file = string.Empty;
-    private BitmapImage image = new BitmapImage();
+        private string[] AvailableFormats = { ".png", ".jpg", ".gif", ".ppm", ".jpeg" };
+        private string file = string.Empty;
+        private string message = string.Empty;
+        private BitmapImage image = new BitmapImage();
 
-    public EncodingPage()
-    {
-        InitializeComponent();
-    }
-
-    private void FileDropped(object sender, DragEventArgs e)
-    {
-        if (!e.Data.GetDataPresent(DataFormats.FileDrop)) return;
-        string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-        if (files.Length != 1)
+        public EncodingPage()
         {
-            ShowFile.Content = "Błąd: nie obsługiwane parę plików na raz.";
-            ImageHolder.Source = null;
-            image = new BitmapImage();
-            return;
+            InitializeComponent();
         }
 
-        GetTheFile(Path.GetFullPath(files[0]));
-    }
-
-    private void GetTheFile(string name)
-    {
-        file = name;
-
-        if (!AvailableFormats.Contains(Path.GetExtension(file)))
+        private void FileDropped(object sender, DragEventArgs e)
         {
-            ShowFile.Content = "Błąd: plik ma nieobsługiwany format " + Path.GetExtension(file);
-            ImageHolder.Source = null;
-            return;
-        }
-
-        ShowFile.Content = Path.GetFileName(file);
-        ImageHolder.Source = new BitmapImage(new Uri(file, UriKind.Absolute));
-    }
-
-    private void OpenExplorer(object sender, RoutedEventArgs e)
-    {
-        OpenFileDialog dialog = new OpenFileDialog();
-        dialog.Filter = "PNG|*.png|GIF|*.gif|JPG|*.jpg;*.jpeg|PPM|*.ppm|" + "All graphics available | *.png;*.jpg;*.jpeg;*.ppm;*.gif";
-        bool? success = dialog.ShowDialog();
-
-        if (success == true)
-            GetTheFile(dialog.FileName);
-    }
-
-        private void Encode(object sender, RoutedEventArgs e)
-        {
-            string ppmPath = "converted.ppm";
-
-            if (!Path.Exists(file)) return;
-            else if (Path.GetExtension(file) == ".ppm")
+            if (!e.Data.GetDataPresent(DataFormats.FileDrop)) return;
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            if (files.Length != 1)
             {
-                File.Copy(file, ppmPath, true);
+                ShowFile.Content = "Błąd: nie obsługiwane parę plików na raz.";
+                ImageHolder.Source = null;
+                image = new BitmapImage();
                 return;
             }
 
-            BitmapImage img = new BitmapImage(new Uri(file));
+            GetTheFile(Path.GetFullPath(files[0]));
+        }
 
-            int width = img.PixelWidth;
-            int height = img.PixelHeight;
-            byte[] pixelData = new byte[width * height * 3];
+        private void GetTheFile(string name)
+        {
+            file = name;
 
-            FormatConvertedBitmap converted = new FormatConvertedBitmap(img, PixelFormats.Rgb24, null, 0);
-            converted.CopyPixels(pixelData, width * 3, 0);
-
-            using (StreamWriter writer = new StreamWriter(ppmPath))
+            if (!AvailableFormats.Contains(Path.GetExtension(file)))
             {
-                writer.WriteLine("P3");
-                writer.WriteLine($"{width} {height}");
-                writer.WriteLine("255");
-
-                for (int i = 0; i < pixelData.Length; i++)
-                {
-                    byte r = pixelData[i];
-                    byte g = pixelData[i];
-                    byte b = pixelData[i];
-
-                    writer.WriteLine($"{r} {g} {b}");
-                }
+                ShowFile.Content = "Błąd: plik ma nieobsługiwany format " + Path.GetExtension(file);
+                ImageHolder.Source = null;
+                image = new BitmapImage();
+                return;
             }
+
+            ShowFile.Content = Path.GetFileName(file);
+            image = new BitmapImage(new Uri(file, UriKind.Absolute));
+            ImageHolder.Source = image;
+        }
+
+        private void OpenExplorer(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "All graphics available | *.png;*.jpg;*.jpeg;*.ppm;*.gif" + "PNG|*.png|GIF|*.gif|JPG|*.jpg;*.jpeg|PPM|*.ppm|";
+            bool? success = dialog.ShowDialog();
+
+            if (success == true)
+                GetTheFile(dialog.FileName);
+        }
+
+        private void ChangeMessage(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            message = MessageTxt.Text;
+        }
+
+        private void Encode(object sender, RoutedEventArgs e)
+        {
+            if (image.UriSource == null)
+            {
+                ShowFile.Content = "Nie podano żadnego zdjęcia";
+                return;
+            }
+            Encoder imageEncoder = new Encoder(image);
+
+            string result = imageEncoder.SavePPMImage("", "converted");
+            if (result != string.Empty)
+                ShowFile.Content = result;
+
+            imageEncoder.EncodeMessage(message);
         }
     }
 }
