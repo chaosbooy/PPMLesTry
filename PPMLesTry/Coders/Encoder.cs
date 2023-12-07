@@ -5,11 +5,19 @@ using System.Windows.Media.Imaging;
 
 namespace PPMLesTry.Coders
 {
+    internal enum WhereStore
+    {
+        r = 0,
+        g,
+        b
+    };
+
     internal class Encoder
     {
         BitmapImage originalImage = new BitmapImage();
         FormatConvertedBitmap ppmImage = new FormatConvertedBitmap();
         BitmapImage encodedImage = new BitmapImage();
+        private string[] AvailableFormats = { ".png", ".jpg", ".gif", ".jpeg" };
 
         public Encoder()
         {
@@ -72,9 +80,11 @@ namespace PPMLesTry.Coders
             return string.Empty;
         }
 
-        public void EncodeMessage(string message)
+        public BitmapImage? EncodeMessage(string message, WhereStore where, string type)
         {
-            if (ppmImage == new FormatConvertedBitmap() || originalImage.UriSource == null) return;
+            if (ppmImage == new FormatConvertedBitmap() || originalImage.UriSource == null) throw new Exception("Error (LP): no image to encode into!");
+            if (message == string.Empty) throw new Exception("Error (LP): no message to encode!");
+            if (!AvailableFormats.Contains(type)) throw new Exception("Error (LP): not in available image formats!");
 
             int width = ppmImage.PixelWidth;
             int height = ppmImage.PixelHeight;
@@ -85,16 +95,64 @@ namespace PPMLesTry.Coders
             string offsetBinary = Convert.ToString(offset, 2).PadLeft(30, '0');
             byte[] messageBinary = Encoding.UTF8.GetBytes(message);
 
-            ppmImage.CopyPixels(pixelData, width * 3, 0);
-
-            for(uint i = 3; i < 33; i++)
-                pixelData[i] = (byte) offsetBinary[Convert.ToInt32(i) - 3];
-
-            for (uint i = 33; i < pixelData.Length; i += space * 3)
+            for(int i = 0; i < 3; i++)
             {
-                if (--offset >= 0) i++;
-                pixelData[i] = (byte)offsetBinary[Convert.ToInt32(i) - 3];
+                var data = Convert.ToString(pixelData[i], 2);
+                if (i != (int)where)
+                    data = data.Substring(0, data.Length - 1) + '0';
+                else
+                    data = data.Substring(0, data.Length - 1) + '1';
+
+                pixelData[i] = Convert.ToByte(data);
             }
+
+            
+            for(uint i = 3; i < 33; i++)
+            {
+                var data = Convert.ToString(pixelData[i], 2);
+                pixelData[i] = Convert.ToByte(data.Substring(0, data.Length - 1) + offsetBinary[Convert.ToInt32(i) - 3]);
+            }
+
+            uint j = 0;
+            for (uint i = 33; i < pixelData.Length; i += space * 3, j++)
+            {
+                var data = Convert.ToString(pixelData[i], 2);
+
+                if (--offset >= 0) i++;
+                    pixelData[i] = (byte)offsetBinary[Convert.ToInt32(i) - 3];
+
+                pixelData[i] = Convert.ToByte(data.Substring(0,data.Length - 1) + messageBinary[j]);
+            }
+
+            var src = BitmapSource.Create(width, height, originalImage.DpiX, originalImage.DpiY, originalImage.Format, originalImage.Palette, pixelData, width * 3);
+            BitmapEncoder encoder = new BmpBitmapEncoder();
+
+            switch(type)
+            {
+                case ".jpg": case ".jpeg":
+                    encoder = new JpegBitmapEncoder();
+                    break;
+                case ".png":
+                    encoder = new PngBitmapEncoder();
+                    break;
+                case ".gif":
+                    encoder = new GifBitmapEncoder();
+                    break;
+            }
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                encoder.Frames.Add(BitmapFrame.Create(src));
+                encoder.Save(ms);
+
+                ms.Position = 0;
+                encodedImage.BeginInit();
+                encodedImage.StreamSource = ms;
+                encodedImage.EndInit();
+            }
+
+
+            return encodedImage;
         }
     }
 }

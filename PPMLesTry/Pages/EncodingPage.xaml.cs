@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
 
 namespace PPMLesTry.Pages
 {
@@ -13,7 +14,7 @@ namespace PPMLesTry.Pages
     /// </summary>
     public partial class EncodingPage : Page
     {
-        private string[] AvailableFormats = { ".png", ".jpg", ".gif", ".ppm", ".jpeg" };
+        private string[] AvailableFormats = { ".png", ".jpg", ".gif", ".jpeg"};
         private string file = string.Empty;
         private string message = string.Empty;
         private BitmapImage image = new BitmapImage();
@@ -51,14 +52,35 @@ namespace PPMLesTry.Pages
             }
 
             ShowFile.Content = Path.GetFileName(file);
-            image = new BitmapImage(new Uri(file, UriKind.Absolute));
+            if(Path.GetExtension(file) == ".ppm")
+            {
+                using (StreamReader sr = new StreamReader(file))
+                {
+                    string format = sr.ReadLine(); // Read the PPM format (P3)
+                    string dimensions = sr.ReadLine(); // Read dimensions (width height)
+                    string maxValue = sr.ReadLine(); // Read the maximum color value (usually 255)
+
+                    string[] dimensionParts = dimensions.Split(' ');
+                    int width = int.Parse(dimensionParts[0]);
+                    int height = int.Parse(dimensionParts[1]);
+
+                    image = new BitmapImage();
+                    image.BeginInit();
+                    image.DecodePixelWidth = width;
+                    image.DecodePixelHeight = height;
+                    image.UriSource = new Uri(file, UriKind.RelativeOrAbsolute);
+                    image.EndInit();
+                }
+            }
+            else
+                 image = new BitmapImage(new Uri(file, UriKind.Absolute));
             ImageHolder.Source = image;
         }
 
         private void OpenExplorer(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Filter = "All graphics available | *.png;*.jpg;*.jpeg;*.ppm;*.gif" + "PNG|*.png|GIF|*.gif|JPG|*.jpg;*.jpeg|PPM|*.ppm|";
+            dialog.Filter = "All graphics available | *.png;*.jpg;*.jpeg;*.gif|" + "PNG|*.png|GIF|*.gif|JPG|*.jpg;*.jpeg";
             bool? success = dialog.ShowDialog();
 
             if (success == true)
@@ -83,7 +105,8 @@ namespace PPMLesTry.Pages
             if (result != string.Empty)
                 ShowFile.Content = result;
 
-            imageEncoder.EncodeMessage(message);
+            if(message != string.Empty)
+                imageEncoder.EncodeMessage(message, WhereStore.r, Path.GetExtension(file));
         }
     }
 }
