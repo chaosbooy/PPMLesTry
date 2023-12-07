@@ -18,12 +18,11 @@
               FontSize="30"/>
 
         <Grid x:Name="FileDrop"
-           Width="500" 
-           Height="200"
+           Width="474"
            AllowDrop="True" 
            Background="#0a0a0a"
            Drop="FileDropped"
-           HorizontalAlignment="Center" Margin="0,100,0,300">
+           HorizontalAlignment="Center" Margin="0,50,0,376">
 
             <Button 
                   Height="50"
@@ -49,34 +48,57 @@
                Width="150"/>
         </Grid>
 
-        <Label
+        <Label x:Name="MssgTxt"
                 Content="Podaj wiadomość do zaszyfrowania"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                FontSize="20"
-                Margin="0,50,0,0"/>
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                FontSize="20" Margin="29,231,0,0"/>
 
 
-        <TextBox x:Name="MessageTxt"
+        <TextBox x:Name="MssgBox"
                  Text=""
                  VerticalContentAlignment="Center"
-                 HorizontalAlignment="Center"
+                 HorizontalAlignment="Left"
                  Height="40"
                  Width="300"
-                 VerticalAlignment="Center"
-                 Margin="0,150,0,0"
+                 VerticalAlignment="Top"
+                 Margin="39,273,0,0"
                  FontSize="24" 
                  KeyUp="ChangeMessage"/>
 
         <Button x:Name="EncodeBtn"
-            Content="Zakoduj"
-            FontSize="30"
-            Width="200"
-            Height="50"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Bottom"
-            Margin="0,0,0,100" 
-            Click="Encode"/>
+                Content="Zakoduj"
+                FontSize="30"
+                Width="227"
+                Height="54"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Margin="434,266,0,0" 
+                Click="Encode"/>
+
+        <Button x:Name="Downloader"
+                Content="Pobierz"
+                FontSize="30"
+                Width="227"
+                Height="50" Margin="236,370,236,180"
+                Visibility="Collapsed"/>
+
+        <Canvas HorizontalAlignment="Center"
+                VerticalAlignment="Bottom"
+                Width="400"
+                Height="150"
+                Margin="0,0,0,30">
+            
+            <Image x:Name="AfterEncode"
+                   Height="150"
+                   Width="150"/>
+
+            <Image x:Name="BeforeEncode"
+                   Height="150"
+                   Width="150"
+                   HorizontalAlignment="Right" Canvas.Left="250"/>
+
+        </Canvas>
 
     </Grid>
 </Page>

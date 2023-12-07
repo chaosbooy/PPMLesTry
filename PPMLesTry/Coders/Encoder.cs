@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using Microsoft.Win32;
+using System.IO;
 using System.Text;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -8,7 +9,7 @@ namespace PPMLesTry.Coders
     internal enum WhereStore
     {
         r = 0,
-        g,
+        g = 1,
         b
     };
 
@@ -41,46 +42,42 @@ namespace PPMLesTry.Coders
             ppmImage = new FormatConvertedBitmap(originalImage, PixelFormats.Rgb24, null, 0);
         }
 
-        public string SavePPMImage(string direction, string name)
+        public void SavePPMImage(string absolutePath)
         {
-            try
+            if (!Path.Exists(absolutePath)) throw new Exception("Error (LP): Inapropriate file name or direction");
+            if (ppmImage == new FormatConvertedBitmap() || originalImage.UriSource == null) throw new Exception("Error (LP): No files that can be saved");
+
+            int width = ppmImage.PixelWidth;
+            int height = ppmImage.PixelHeight;
+            byte[] pixelData = new byte[width * height * 3];
+
+            ppmImage.CopyPixels(pixelData, width * 3, 0);
+
+            using (StreamWriter writer = new StreamWriter(Path.GetPathRoot(absolutePath) + Path.GetFileNameWithoutExtension(absolutePath) + ".ppm"))
             {
-                name = name.Trim();
-                if (!Path.Exists(direction) && direction != string.Empty) throw new Exception("ścieżka");
-                if (name == string.Empty) return "nazwa";
-                if (ppmImage == new FormatConvertedBitmap() || originalImage.UriSource == null) throw new Exception("pusto");
+                writer.WriteLine("P3");
+                writer.WriteLine($"{width} {height}");
+                writer.WriteLine("255");
 
-                int width = ppmImage.PixelWidth;
-                int height = ppmImage.PixelHeight;
-                byte[] pixelData = new byte[width * height * 3];
-
-                ppmImage.CopyPixels(pixelData, width * 3, 0);
-
-                using (StreamWriter writer = new StreamWriter(direction + name + ".ppm"))
+                for (int i = 0; i < pixelData.Length; i++)
                 {
-                    writer.WriteLine("P3");
-                    writer.WriteLine($"{width} {height}");
-                    writer.WriteLine("255");
+                    byte r = pixelData[i];
+                    byte g = pixelData[++i];
+                    byte b = pixelData[++i];
 
-                    for (int i = 0; i < pixelData.Length; i++)
-                    {
-                        byte r = pixelData[i];
-                        byte g = pixelData[++i];
-                        byte b = pixelData[++i];
-
-                        writer.WriteLine($"{r} {g} {b}");
-                    }
+                    writer.WriteLine($"{r} {g} {b}");
                 }
             }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
-
-            return string.Empty;
         }
 
-        public BitmapImage? EncodeMessage(string message, WhereStore where, string type)
+        public void SaveEncodedImage(string absolutePath)
+        {
+            if (!Path.Exists(absolutePath)) throw new Exception("Error (LP): Inapropriate file name or direction");
+            if (encodedImage.UriSource == null) throw new Exception("Error (LP): No files that can be saved");
+
+        }
+
+        public BitmapImage EncodeMessage(string message, WhereStore where, string type)
         {
             if (ppmImage == new FormatConvertedBitmap() || originalImage.UriSource == null) throw new Exception("Error (LP): no image to encode into!");
             if (message == string.Empty) throw new Exception("Error (LP): no message to encode!");
@@ -150,7 +147,6 @@ namespace PPMLesTry.Coders
                 encodedImage.StreamSource = ms;
                 encodedImage.EndInit();
             }
-
 
             return encodedImage;
         }

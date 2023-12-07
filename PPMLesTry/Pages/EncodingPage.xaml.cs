@@ -18,6 +18,7 @@ namespace PPMLesTry.Pages
         private string file = string.Empty;
         private string message = string.Empty;
         private BitmapImage image = new BitmapImage();
+        private BitmapImage encodedImage = new BitmapImage();
 
         public EncodingPage()
         {
@@ -75,6 +76,10 @@ namespace PPMLesTry.Pages
             else
                  image = new BitmapImage(new Uri(file, UriKind.Absolute));
             ImageHolder.Source = image;
+            encodedImage = new BitmapImage();
+            BeforeEncode.Source = new BitmapImage();
+            AfterEncode.Source = new BitmapImage();
+            Downloader.Visibility = Visibility.Collapsed;
         }
 
         private void OpenExplorer(object sender, RoutedEventArgs e)
@@ -89,8 +94,11 @@ namespace PPMLesTry.Pages
 
         private void ChangeMessage(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            message = MessageTxt.Text;
+            message = MssgBox.Text;
+            MssgTxt.Foreground = new SolidColorBrush(Colors.DarkGray);
         }
+
+        
 
         private void Encode(object sender, RoutedEventArgs e)
         {
@@ -98,15 +106,19 @@ namespace PPMLesTry.Pages
             {
                 ShowFile.Content = "Nie podano żadnego zdjęcia";
                 return;
+            } 
+            if (message == string.Empty)
+            {
+                MssgTxt.Foreground = new SolidColorBrush(Colors.Red);
+                return;
             }
+
             Encoder imageEncoder = new Encoder(image);
+            encodedImage = imageEncoder.EncodeMessage(message, WhereStore.g, Path.GetExtension(file));
 
-            string result = imageEncoder.SavePPMImage("", "converted");
-            if (result != string.Empty)
-                ShowFile.Content = result;
-
-            if(message != string.Empty)
-                imageEncoder.EncodeMessage(message, WhereStore.r, Path.GetExtension(file));
+            BeforeEncode.Source = image;
+            AfterEncode.Source = encodedImage;
+            Downloader.Visibility = Visibility.Visible;
         }
     }
 }
