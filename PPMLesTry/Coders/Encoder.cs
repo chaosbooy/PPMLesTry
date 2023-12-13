@@ -53,7 +53,7 @@ namespace PPMLesTry.Coders
 
             ppmImage.CopyPixels(pixelData, width * 3, 0);
 
-            using (StreamWriter writer = new StreamWriter(Path.GetPathRoot(absolutePath) + Path.GetFileNameWithoutExtension(absolutePath) + ".ppm"))
+            using (StreamWriter writer = new StreamWriter(absolutePath))
             {
                 writer.WriteLine("P3");
                 writer.WriteLine($"{width} {height}");
@@ -72,8 +72,29 @@ namespace PPMLesTry.Coders
 
         public void SaveEncodedImage(string absolutePath)
         {
-            if (!Path.Exists(absolutePath)) throw new Exception("Error (LP): Inapropriate file name or direction");
             if (encodedImage.UriSource == null) throw new Exception("Error (LP): No files that can be saved");
+
+            BitmapEncoder encoder = new BmpBitmapEncoder();
+
+            switch (Path.GetExtension(absolutePath))
+            {
+                case ".jpg":
+                case ".jpeg":
+                    encoder = new JpegBitmapEncoder();
+                    break;
+                case ".png":
+                    encoder = new PngBitmapEncoder();
+                    break;
+                case ".gif":
+                    encoder = new GifBitmapEncoder();
+                    break;
+            }
+            encoder.Frames.Add(BitmapFrame.Create(encodedImage));
+
+            using (FileStream fileStream = new FileStream(absolutePath, FileMode.Create))
+            {
+                encoder.Save(fileStream);
+            }
 
         }
 
@@ -83,16 +104,16 @@ namespace PPMLesTry.Coders
             if (message == string.Empty) throw new Exception("Error (LP): no message to encode!");
             if (!AvailableFormats.Contains(type)) throw new Exception("Error (LP): not in available image formats!");
 
-            int width = ppmImage.PixelWidth;
-            int height = ppmImage.PixelHeight;
+            int width = originalImage.PixelWidth;
+            int height = originalImage.PixelHeight;
             byte[] pixelData = new byte[width * height * 3];
             uint pixelAmount = Convert.ToUInt32(pixelData.Length / 3);
-            uint space = Convert.ToUInt32(pixelAmount / message.Length);
             uint offset = Convert.ToUInt32(pixelAmount % message.Length);
             string offsetBinary = Convert.ToString(offset, 2).PadLeft(30, '0');
             byte[] messageBinary = Encoding.UTF8.GetBytes(message);
+            uint space = Convert.ToUInt32(pixelAmount / messageBinary.Length);
 
-            for(int i = 0; i < 3; i++)
+            for (int i = 0; i < 3; i++)
             {
                 var data = Convert.ToString(pixelData[i], 2);
                 if (i != (int)where)
@@ -116,14 +137,14 @@ namespace PPMLesTry.Coders
                 var data = Convert.ToString(pixelData[i], 2);
 
                 if (--offset >= 0) i++;
-                    pixelData[i] = (byte)offsetBinary[Convert.ToInt32(i) - 3];
 
                 pixelData[i] = Convert.ToByte(data.Substring(0,data.Length - 1) + messageBinary[j]);
             }
-
-            var src = BitmapSource.Create(width, height, originalImage.DpiX, originalImage.DpiY, originalImage.Format, originalImage.Palette, pixelData, width * 3);
+            
+            var src = BitmapSource.Create(width, height, ppmImage.DpiX, ppmImage.DpiY, ppmImage.Format, ppmImage.Palette, pixelData, width * 3);
+            
             BitmapEncoder encoder = new BmpBitmapEncoder();
-
+            
             switch(type)
             {
                 case ".jpg": case ".jpeg":
@@ -147,7 +168,9 @@ namespace PPMLesTry.Coders
                 encodedImage.StreamSource = ms;
                 encodedImage.EndInit();
             }
+            
 
+            SaveEncodedImage("C:\\Users\\Łęóń\\source\\repos\\chaosbooy\\PPMLesTry\\PPMLesTry\\bin\\Debug\\net8.0-windows\\converted.png");
             return encodedImage;
         }
     }

@@ -94,14 +94,13 @@ namespace PPMLesTry.Pages
 
         private void ChangeMessage(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            message = MssgBox.Text;
+            message = MssgBox.Text = MssgBox.Text.TrimStart();
             MssgTxt.Foreground = new SolidColorBrush(Colors.DarkGray);
         }
 
-        
-
         private void Encode(object sender, RoutedEventArgs e)
         {
+            message = MssgBox.Text = MssgBox.Text.TrimEnd();
             if (image.UriSource == null)
             {
                 ShowFile.Content = "Nie podano żadnego zdjęcia";
@@ -116,7 +115,21 @@ namespace PPMLesTry.Pages
             Encoder imageEncoder = new Encoder(image);
             encodedImage = imageEncoder.EncodeMessage(message, WhereStore.g, Path.GetExtension(file));
 
-            BeforeEncode.Source = image;
+            if (encodedImage == null)
+            {
+                string boxmess = "Internal error please try again after some time and report it to the admins!";
+                string caption = "No encoded image!";
+                MessageBoxButton button = MessageBoxButton.OK;
+                MessageBoxImage icon = MessageBoxImage.Error;
+                MessageBoxResult r;
+                r = MessageBox.Show(boxmess, caption, button, icon);
+
+                if (r == MessageBoxResult.OK) 
+                {
+                    App.Current.Shutdown();
+                }
+            }
+            BeforeEncode.Source = ImageHolder.Source;
             AfterEncode.Source = encodedImage;
             Downloader.Visibility = Visibility.Visible;
         }

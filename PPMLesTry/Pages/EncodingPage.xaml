@@ -80,7 +80,7 @@
                 Content="Pobierz"
                 FontSize="30"
                 Width="227"
-                Height="50" Margin="236,370,236,180"
+                Height="50" Margin="236,338,236,212"
                 Visibility="Collapsed"/>
 
         <Canvas HorizontalAlignment="Center"
@@ -89,14 +89,15 @@
                 Height="150"
                 Margin="0,0,0,30">
             
-            <Image x:Name="AfterEncode"
-                   Height="150"
-                   Width="150"/>
-
             <Image x:Name="BeforeEncode"
                    Height="150"
                    Width="150"
-                   HorizontalAlignment="Right" Canvas.Left="250"/>
+                   Canvas.Left="0"/>
+
+            <Image x:Name="AfterEncode"
+                   Height="150"
+                   Width="150"
+                   Canvas.Left="250"/>
 
         </Canvas>
 
